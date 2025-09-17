@@ -61,10 +61,9 @@
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $item->nama_produk }}</td>
                             <td>{{ $item->jumlah }}</td>
-                            <td>{{ number_format($item->harga_awal, 0, ',', '.') }}</td>
+                            <td>{{ number_format($item->harga_produk, 0, ',', '.') }}</td>
                             <td>{{ $diskon }}%</td>
-                            <td>{{ number_format($hargaSetelahDiskon, 0, ',', '.') }}</td>
-                            <td>{{ number_format($subtotalSetelahDiskon, 0, ',', '.') }}</td>
+                            <td>{{ number_format($item->subtotal, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

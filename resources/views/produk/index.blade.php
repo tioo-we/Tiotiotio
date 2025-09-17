@@ -47,16 +47,17 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Kode</th>
-                        <th>Nama Produk</th>
-                        <th>Kategori</th>
-                        <th>Harga Produk</th>
-                        <th>Diskon</th>
-                        <th>Harga Jual</th>
-                        <th>Stok</th>
-                        <th class="text-center"></th> {{-- header kosong untuk edit & hapus --}}
-                    </tr>
+                <th>#</th>
+                <th>Kode</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga_produk</th>
+                <th>Diskon</th>
+                <th>Stok</th>
+                <th>Harga jual</th>
+                <th>Harga setelah diskon</th>
+                <th></th>
+            </tr>
                 </thead>
                 <tbody>
                     @foreach ($produks as $key => $produk)
@@ -66,9 +67,14 @@
                             <td>{{ $produk->nama_produk }}</td>
                             <td>{{ $produk->nama_kategori }}</td>
                             <td>{{ number_format($produk->harga_produk, 0, ',', '.') }}</td>
-                            <td>{{ $produk->diskon }} %</td>
-                            <td>{{ number_format($produk->harga, 0, ',', '.') }}</td>
-                            <td>{{ $produk->stok }}</td>
+                <td>{{ $produk->diskon}}</td>
+                <td>{{ $produk->stok }}</td>
+                <td>{{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
+                
+                <!-- Tambahkan ini -->
+            <td>
+                {{ number_format($produk->harga_jual - ($produk->harga_jual * $produk->diskon / 100), 0) }}
+            </td>
                             <td class="text-center">
                                 <a href="{{ route('produk.edit', ['produk' => $produk->id]) }}"
                                    class="btn btn-xs text-success p-0 mr-2">

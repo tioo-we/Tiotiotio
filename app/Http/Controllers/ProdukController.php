@@ -58,19 +58,24 @@ class ProdukController extends Controller
         $request->validate([
             'kode_produk' => ['required', 'max:250', 'unique:produks'],
             'nama_produk' => ['required', 'max:150'],
-            'harga' => ['required', 'numeric'],
+             'harga' => ['required', 'numeric', 'min:0'], // Harga beli/modal
+        'harga_jual' => ['required', 'numeric', 'min:0'], // Harga jual
+        'diskon' => ['required','between:0,100'],
             'kategori_id' => ['required', 'exists:kategoris,id'],
-            'diskon'=>['required', 'between:0,100'], //diskon
         ]);
-        //dikon
-        $harga=$request->harga-($request->harga * $request->diskon / 100);
-        $request->merge([
-            'harga_produk'=>$request->harga,
-            'harga'=>$harga,
-        ]);
-        //diskon
-        Produk::create($request->all());
+        // Hitung harga final setelah diskon dari harga jual
+    $harga_final = $request->harga_jual - ($request->harga_jual * $request->diskon / 100);
 
+    // Simpan data ke database
+    Produk::create([
+        'kode_produk' => $request->kode_produk,
+        'nama_produk' => $request->nama_produk,
+        'harga_produk' => $request->harga, // Harga modal/beli
+        'harga_jual' => $request->harga_jual, // Harga jual sebelum diskon
+        'harga' => $harga_final, // Harga final setelah diskon (untuk transaksi)
+        'diskon' => $request->diskon,
+        'kategori_id' => $request->kategori_id,
+    ]);
         return redirect()->route('produk.index')->with('store', 'success');
     }
 
@@ -110,17 +115,24 @@ class ProdukController extends Controller
             'kode_produk' => ['required', 'max:250', 'unique:produks,kode_produk,' . $produk->id],
             'nama_produk' => ['required', 'max:150'],
             'harga' => ['required', 'numeric'],
+            'harga_jual' => ['required', 'numeric', 'min:0'],
             'kategori_id' => ['required', 'exists:kategoris,id'],
             'diskon'=>['required', 'between:0,100'], //diskon
         ]);
 
-        $harga=$request->harga-($request->harga * $request->diskon/100);
-        $request->merge([
-            'harga_produk'=>$request->harga,
-            'harga'=>$harga,
-        ]);
+        // Hitung harga final setelah diskon dari harga jual
+        $harga_final = $request->harga_jual - ($request->harga_jual * $request->diskon / 100);
 
-        $produk->update($request->all());
+        // Update produk
+        $produk->update([
+            'kode_produk' => $request->kode_produk,
+            'nama_produk' => $request->nama_produk,
+            'harga_produk' => $request->harga, // Harga modal/beli
+            'harga_jual' => $request->harga_jual, // Harga jual sebelum diskon
+            'harga' => $harga_final, // Harga final setelah diskon (untuk transaksi)
+            'diskon' => $request->diskon,
+            'kategori_id' => $request->kategori_id,
+        ]);
 
         return redirect()->route ('produk.index')->with('update', 'success');
     }

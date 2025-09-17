@@ -44,11 +44,13 @@ class CartController extends Controller
             'id' => $produk->id,
             'title' => $produk->nama_produk,
             'quantity' => $request->quantity,
-            'price' => $produk->harga,
+            'price' => $produk->harga, // Harga final setelah diskon
             'options'=>[
                 'kategori_id' => $produk->kategori_id,
                 'diskon'=>$produk->diskon,
-                'harga_produk'=>$produk->harga_produk,
+                'harga_produk' => $produk->harga_produk, // Harga modal
+                'harga_jual' => $produk->harga_jual, // Harga jual sebelum diskon
+                'harga_final' => $produk->harga, // Harga final setelah diskon
             ]
         ]);
 

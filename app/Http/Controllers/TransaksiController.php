@@ -41,6 +41,20 @@ class TransaksiController extends Controller
         ]);
     }
 
+    public function getProduk($id)
+{
+    $produk = Produk::findOrFail($id);
+
+    return response()->json([
+        'id' => $produk->id,
+        'nama' => $produk->nama_produk,
+        'harga' => $produk->harga, // Gunakan harga final (setelah diskon)
+        'harga_jual' => $produk->harga_jual, // Harga jual sebelum diskon
+        'diskon' => $produk->diskon,
+        'stok' => $produk->stok,
+    ]);
+}
+
     public function store(Request $request)
     {
         // 🔥 Bersihkan titik pada input cash sebelum validasi
@@ -69,6 +83,13 @@ class TransaksiController extends Controller
         $no = $lastTransaction
             ? str_pad(((int)substr($lastTransaction->nomor_transaksi, 8)) + 1, 4, '0', STR_PAD_LEFT)
             : '0001';
+
+        // Hitung subtotal manual
+    $allItems = $cartDetails->get('items');
+    $subtotal = 0;
+    foreach ($allItems as $item) {
+        $subtotal += $item->price * $item->quantity;
+    }
 
         $nomor_transaksi = $today . $no;
 
@@ -103,9 +124,9 @@ class TransaksiController extends Controller
             DetilPenjualan::create([
                 'penjualan_id' => $penjualan->id,
                 'produk_id' => $item->id,
-                'harga_produk' => $item->price,
-                'jumlah' => $item->quantity,
-                'subtotal' => $item->subtotal
+                'harga_produk' => $item->price, // Gunakan harga final (setelah diskon)
+            'jumlah' => $item->quantity,
+            'subtotal' => $item->price * $item->quantity
             ]);
 
             $produk = Produk::find($item->id);

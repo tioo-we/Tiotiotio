@@ -155,7 +155,7 @@
         const row = `<tr>
                         <td>${title}</td>
                         <td>${quantity}x</td>
-                        <td>${rupiah(harga_produk)} ${nilai_diskon}</td>
+                        <td>${rupiah(price)}${nilai_diskon}</td>
                         <td>${rupiah(total_price)}</td>
                         <td>${btn}</td>
                     </tr>`;

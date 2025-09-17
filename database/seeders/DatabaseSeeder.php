@@ -57,16 +57,20 @@ class DatabaseSeeder extends Seeder
             'kategori_id'=>1,
             'kode_produk'=>'1001',
             'nama_produk'=>'Chiki Taro',
-            'harga'=>5000,
-            'harga_produk'=>5000, //diskon
+            'harga_produk' => 2500,    // Harga beli/modal
+            'harga_jual' => 3500,      // Harga jual sebelum diskon
+            'diskon' => 0,             // Tidak ada diskon
+            'harga' => 3500,           // Harga final (3500 - 0% = 3500)
         ]);
 
         \App\Models\Produk::create([
             'kategori_id'=>2,
             'kode_produk'=>'1002',
             'nama_produk'=>'Le Minerale',
-            'harga'=>3500,
-            'harga_produk'=>3500 //diskon
+            'harga_produk' => 2500,    // Harga beli/modal
+            'harga_jual' => 3500,      // Harga jual sebelum diskon
+            'diskon' => 0,             // Tidak ada diskon
+            'harga' => 3500,           // Harga final (3500 - 0% = 3500)
         ]);
 
         \App\Models\Stok::create([
@@ -91,60 +95,5 @@ class DatabaseSeeder extends Seeder
             'stok'=>100,
         ]);
 
-        \App\Models\Penjualan::create([
-            'user_id' => 1,
-            'pelanggan_id' => 1,
-            'nomor_transaksi' => date('Ymd') . '0001',
-            'tanggal' => date('Y-m-d H:i:s'),
-            'subtotal' => 8500,
-            'pajak' => 850,
-            'total' => 9350,
-            'tunai' => 10000,
-            'kembalian' => 650
-        ]);
-
-        \App\Models\Penjualan::create([
-            'user_id' => 2,
-            'pelanggan_id' => 2,
-            'nomor_transaksi' => date('Ymd') . '0002',
-            'tanggal' => date('Y-m-d H:i:s'),
-            'subtotal' => 23500,
-            'pajak' => 1350,
-            'total' => 14850,
-            'tunai' => 20000,
-            'kembalian' => 5150
-        ]);
-
-        \App\Models\DetilPenjualan::create([
-            'penjualan_id' => 1,
-            'produk_id' => 1,
-            'jumlah' => 1,
-            'harga_produk' => 5000,
-            'subtotal' => 5000,
-        ]);
-
-        \App\Models\DetilPenjualan::create([
-            'penjualan_id' => 1,
-            'produk_id' => 2,
-            'jumlah' => 1,
-            'harga_produk' => 3500,
-            'subtotal' => 3500,
-        ]);
-
-        \App\Models\DetilPenjualan::create([
-            'penjualan_id' => 2,
-            'produk_id' => 1,
-            'jumlah' => 1,
-            'harga_produk' => 5000,
-            'subtotal' => 10000,
-        ]);
-
-        \App\Models\DetilPenjualan::create([
-            'penjualan_id' => 2,
-            'produk_id' => 2,
-            'jumlah' => 1,
-            'harga_produk' => 3500,
-            'subtotal' => 3500,
-        ]);
     }
 }

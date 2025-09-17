@@ -23,4 +23,9 @@ class Penjualan extends Model
         'subtotal',
         'pajak'
     ];
+
+    public function detilPenjualan()
+{
+    return $this->hasMany(DetilPenjualan::class);
+}
 }

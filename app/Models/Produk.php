@@ -19,6 +19,25 @@ class Produk extends Model
         'stok',
         // diskon
         'harga_produk',
+         'harga_jual',
         'diskon'
     ];
+
+    // Relasi ke tabel stok
+    public function stoks()
+    {
+        return $this->hasMany(Stok::class, 'produk_id');
+    }
+    
+    // Accessor untuk mendapatkan harga final
+    public function getHargaFinalAttribute()
+    {
+        return $this->harga_jual - ($this->harga_jual * $this->diskon / 100);
+    }
+    
+    // Accessor untuk mendapatkan keuntungan per unit
+    public function getKeuntunganAttribute()
+    {
+        return $this->getHargaFinalAttribute() - $this->harga_produk;
+    }
 }

@@ -24,14 +24,21 @@
                         <x-input name="nama_produk" type="text" :value="$produk->nama_produk" />
                     </div>
                     <div class="form-group">
-                        <label>Harga Produk</label>
-                        <x-input name="harga" type="text" :value="$produk->harga_produk" /> <!--diskon-->
-                    </div>
-                    <!--diskon-->
-                    <div class="form-group">
-                        <label>Diskon</label>
-                        <x-input name="diskon" type="text" :value="$produk->diskon" />
-                    </div>
+                    <label>Harga Produk</label>
+                    <x-input name="harga" type="number" :value="$produk->harga_produk" />
+                </div>
+
+                <div class="form-group">
+    <label for="harga_jual">Harga Jual</label>
+    <input type="number" name="harga_jual" class="form-control" 
+           value="{{ old('harga_jual', $produk->harga_jual) }}">
+</div>
+
+
+                <div class="form-group">
+                    <label>Diskon (%)</label>
+                    <x-input name="diskon" type="number" :value="$produk->diskon" />
+                </div>
                     <!--diskon-->
                     <div class="form-group">
                         <label>Kategori</label>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Produk;
 use App\Models\Stok;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StokController extends Controller
 {
@@ -53,7 +54,90 @@ class StokController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get suppliers list for autocomplete
+     */
+    public function suppliers(Request $request)
+    {
+        $suppliers = Stok::select('nama_suplier')
+            ->where('nama_suplier', 'like', "%{$request->search}%")
+            ->distinct()
+            ->orderBy('nama_suplier')
+            ->take(10)
+            ->get();
+
+        return response()->json($suppliers);
+    }
+
+    /**
+     * Get products by supplier
+     */
+    public function produkBySuplier(Request $request)
+    {
+        $nama_suplier = $request->nama_suplier;
+        
+        // Get products that have been supplied by this supplier before
+        $produkIds = Stok::where('nama_suplier', $nama_suplier)
+            ->distinct()
+            ->pluck('produk_id');
+
+        $produks = Produk::select('id', 'nama_produk', 'stok')
+            ->whereIn('id', $produkIds)
+            ->orderBy('nama_produk')
+            ->get();
+
+        return response()->json($produks);
+    }
+
+    /**
+     * Store multiple products from same supplier
+     */
+    public function storeMultiple(Request $request)
+    {
+        $request->validate([
+            'nama_suplier' => ['required', 'max:150'],
+            'products' => ['required', 'array', 'min:1'],
+            'products.*.produk_id' => ['required', 'exists:produks,id'],
+            'products.*.jumlah' => ['required', 'numeric', 'min:1']
+        ], [
+            'products.required' => 'Pilih minimal satu produk',
+            'products.*.produk_id.required' => 'Produk harus dipilih',
+            'products.*.jumlah.required' => 'Jumlah harus diisi',
+            'products.*.jumlah.numeric' => 'Jumlah harus berupa angka',
+            'products.*.jumlah.min' => 'Jumlah minimal 1'
+        ]);
+
+        DB::beginTransaction();
+        
+        try {
+            $tanggal = date('Y-m-d');
+            
+            foreach ($request->products as $product) {
+                // Create stock record
+                Stok::create([
+                    'produk_id' => $product['produk_id'],
+                    'nama_suplier' => $request->nama_suplier,
+                    'jumlah' => $product['jumlah'],
+                    'tanggal' => $tanggal
+                ]);
+
+                // Update product stock
+                $produk = Produk::find($product['produk_id']);
+                $produk->update([
+                    'stok' => $produk->stok + $product['jumlah']
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('stok.index')->with('store', 'success');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan data')->withInput();
+        }
+    }
+
+    /**
+     * Store single product (keep for backward compatibility)
      */
     public function store(Request $request)
     {
@@ -80,10 +164,6 @@ class StokController extends Controller
         return redirect()->route('stok.index')->with('store', 'success');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-   
     public function destroy(Stok $stok)
     {
         $produk = Produk::find($stok->produk_id);
